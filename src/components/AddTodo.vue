@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- bind submit event -->
     <form @submit="addTodo">
       <input
         type="text"
@@ -28,8 +29,7 @@ export default {
         title: this.title,
         completed: false
       };
-      // send up to parent
-
+      // emit and event up to parent
       this.$emit('add-todo', newTodo);
       this.title = '';
     }
