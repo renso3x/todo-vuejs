@@ -8,12 +8,14 @@
 </template>
 
 <script>
-import Todos from "./components/Todos";
-import Header from "./components/layout/Header";
-import AddTodo from "./components/AddTodo";
+import axios from 'axios';
+
+import Todos from './components/Todos';
+import Header from './components/layout/Header';
+import AddTodo from './components/AddTodo';
 
 export default {
-  name: "app",
+  name: 'app',
   components: {
     Todos,
     Header,
@@ -21,39 +23,44 @@ export default {
   },
   data() {
     return {
-      todos: [
-        {
-          id: 1,
-          name: "Todo One",
-          completed: false
-        },
-        {
-          id: 2,
-          name: "Todo Two",
-          completed: true
-        },
-        {
-          id: 3,
-          name: "Todo Three",
-          completed: false
-        }
-      ]
+      todos: []
     };
   },
   methods: {
     deleteTodo(id) {
-      this.todos = this.todos.filter(todo => todo.id !== id);
+      axios
+        .delete(`https://jsonplaceholder.typicode.com/todos/${id}`)
+        .then(() => {
+          this.todos = this.todos.filter(todo => todo.id !== id);
+        })
+        .catch(err => console.log(err));
     },
     addTodo(newTodo) {
-      this.todos = [...this.todos, newTodo];
+      const { title, completed } = newTodo;
+
+      axios
+        .post('https://jsonplaceholder.typicode.com/todos', {
+          title,
+          completed
+        })
+        .then(res => {
+          this.todos = [...this.todos, res.data];
+        })
+        .catch(err => console.log(err));
     }
+  },
+  created() {
+    axios
+      .get('https://jsonplaceholder.typicode.com/todos?_limit=5')
+      .then(res => (this.todos = res.data))
+      .catch(err => console.log(err));
   }
 };
 </script>
 
 <style>
 #app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
